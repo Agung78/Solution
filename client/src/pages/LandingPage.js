@@ -56,7 +56,6 @@ export default function LandingPage() {
   }
 
   function edit(id) {
-    // console.log(id)
     history.push({ pathname: '/edit', state: id })
   }
 

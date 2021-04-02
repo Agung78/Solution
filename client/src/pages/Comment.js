@@ -30,7 +30,7 @@ export default function Comment() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          comment, poster: JSON.parse(localStorage.getItem('userLogin')).email, ContentId: location.state
+          content: comment, poster: JSON.parse(localStorage.getItem('userLogin')).email, ContentId: location.state
         })
       })
       const data = await dispatch(getUserComment(location.state))
@@ -58,7 +58,7 @@ export default function Comment() {
                 onChange={(e) => handleChange(e)} name="comment" value={comment} />
             </div>
             <button type="button" className="btn btn-primary" onClick={post}>Submit</button>
-            <button type="button" className="btn btn-primary ml-2" onClick={check}>Check</button>
+            {/* <button type="button" className="btn btn-primary ml-2" onClick={check}>Check</button> */}
           </form>
         </div>
       </div>
@@ -68,7 +68,7 @@ export default function Comment() {
             userComment.map((val, id) =>
               <div key={id} className="card mb-2 p-3 text-right">
                 <p>{val.content}</p>
-                <p>{val.poster}</p>
+                <p>Posted by : {val.poster}</p>
               </div>
             )
           }

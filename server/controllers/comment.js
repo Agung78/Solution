@@ -4,6 +4,7 @@ class Controller {
   static async createComment(req, res) {
     try {
       const { content, poster, ContentId } = req.body
+      console.log({ content, poster, ContentId })
       const newComment = await Comment.create({ content, poster, ContentId })
       res.status(201).json(newComment)
     } catch (error) {

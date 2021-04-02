@@ -1,6 +1,20 @@
-const { Content, UserContent } = require('../models')
+const { Content, UserContent, User } = require('../models')
 
 class Controller {
+  static async listContent(req, res) {
+    console.log(req.body.id)
+    try {
+      const list = await UserContent.findAll({
+        where: {
+          UserId: req.body.id
+        },
+        include: User
+      })
+      res.status(200).json(list)
+    } catch (error) {
+      res.status(500).json({ msg: error.message })
+    }
+  }
   static async createContent(req, res) {
     try {
       const { title, content, UserId } = req.body

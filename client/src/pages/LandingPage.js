@@ -1,13 +1,23 @@
 import { useEffect, useState } from "react"
 import { useLocation } from "react-router"
+import { useDispatch, useSelector } from 'react-redux'
+import { getUserContent, setUserContentError } from '../store/actions/userContent'
 
 export default function LandingPage() {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
+  const [userContent, setUserContent] = useState([])
+  const dataContent = useSelector(state => state.userContentReducer.userContent)
   const location = useLocation()
+  const dispatch = useDispatch()
 
-  useEffect(() => {
-    console.log(localStorage.getItem('userLogin'))
+  useEffect(async () => {
+    try {
+      const data = await dispatch(getUserContent(JSON.parse(localStorage.getItem('userLogin')).id))
+      setUserContent(data)
+    } catch (error) {
+      setUserContentError(error.message)
+    }
   }, [location.key])
 
   function handleChange(e) {
@@ -33,6 +43,10 @@ export default function LandingPage() {
     }
   }
 
+  async function check() {
+    console.log(dataContent)
+  }
+
   return (
     <div className="container">
       <p className="text-center">Ini LandingPage</p>
@@ -51,8 +65,12 @@ export default function LandingPage() {
                 onChange={(e) => handleChange(e)} name="content" />
             </div>
             <button type="button" className="btn btn-primary" onClick={post}>Submit</button>
+            <button type="button" className="btn btn-primary" onClick={check}>Check</button>
           </form>
         </div>
+      </div>
+      <div className="row">
+        <p>{JSON.stringify(userContent)}</p>
       </div>
     </div>
   )

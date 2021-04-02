@@ -12,6 +12,7 @@ routes.post('/worker/register', ControllerWorker.register)
 routes.post('/worker/login', ControllerWorker.login)
 routes.post('/worker/logout', ControllerWorker.logout)
 
+routes.post('/content/list', ControllerContent.listContent)
 routes.post('/content/create', ControllerContent.createContent)
 routes.put('/content/update', ControllerContent.updateContent)
 routes.delete('/content/delete', ControllerContent.deleteContent)

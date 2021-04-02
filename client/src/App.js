@@ -3,6 +3,8 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import LandingPage from './pages/LandingPage'
+import Edit from './pages/Edit'
+import Comment from './pages/Comment'
 
 function App() {
   return (
@@ -18,6 +20,12 @@ function App() {
       </Route>
       <Route path="/landingpage">
         <LandingPage />
+      </Route>
+      <Route path="/edit">
+        <Edit />
+      </Route>
+      <Route path="/comment">
+        <Comment />
       </Route>
     </Switch>
   )

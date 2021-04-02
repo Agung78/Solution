@@ -2,13 +2,24 @@ const { Content, UserContent, User } = require('../models')
 
 class Controller {
   static async listContent(req, res) {
-    console.log(req.body.id)
     try {
       const list = await UserContent.findAll({
         where: {
           UserId: req.body.id
         },
-        include: User
+        include: Content
+      })
+      res.status(200).json(list)
+    } catch (error) {
+      res.status(500).json({ msg: error.message })
+    }
+  }
+  static async listIdContent(req, res) {
+    try {
+      const list = await Content.findOne({
+        where: {
+          id: req.body.id
+        }
       })
       res.status(200).json(list)
     } catch (error) {

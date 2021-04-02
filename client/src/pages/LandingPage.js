@@ -1,15 +1,25 @@
-import { useEffect, useState } from "react"
-import { useLocation } from "react-router"
+import { useContext, useEffect, useState } from "react"
+import { useLocation, useHistory } from "react-router"
 import { useDispatch, useSelector } from 'react-redux'
-import { getUserContent, setUserContentError } from '../store/actions/userContent'
+import { getUserContent, setUserContentError, deleteUserContentId } from '../store/actions/userContent'
+import Swal from 'sweetalert2'
 
 export default function LandingPage() {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [userContent, setUserContent] = useState([])
-  const dataContent = useSelector(state => state.userContentReducer.userContent)
   const location = useLocation()
   const dispatch = useDispatch()
+  const history = useHistory()
+
+  const fetchData = async () => {
+    try {
+      const data = await dispatch(getUserContent(JSON.parse(localStorage.getItem('userLogin')).id))
+      setUserContent(data)
+    } catch (error) {
+      setUserContentError(error.message)
+    }
+  }
 
   useEffect(async () => {
     try {
@@ -36,15 +46,45 @@ export default function LandingPage() {
         },
         body: JSON.stringify({ title, content, UserId: JSON.parse(localStorage.getItem('userLogin')).id })
       })
-      const data = await response.json()
-      console.log(data)
+      const data = await dispatch(getUserContent(JSON.parse(localStorage.getItem('userLogin')).id))
+      setUserContent(data)
+      setTitle('')
+      setContent('')
     } catch (error) {
       console.log(error)
     }
   }
 
-  async function check() {
-    console.log(dataContent)
+  function edit(id) {
+    // console.log(id)
+    history.push({ pathname: '/edit', state: id })
+  }
+
+  async function deleter(id) {
+    Swal.fire({
+      title: 'Do you want to delete the task ?',
+      showDenyButton: true,
+      confirmButtonText: `Delete`,
+      denyButtonText: `Nope`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        try {
+          dispatch(deleteUserContentId(id))
+          fetchData()
+          history.push('/landingpage')
+          Swal.fire('Saved!', '', 'success')
+        } catch (error) {
+          console.log(error)
+        }
+      } else if (result.isDenied) {
+        Swal.fire('Changes are not saved', '', 'info')
+      }
+    })
+  }
+
+  function comment(id) {
+    history.push({ pathname: '/comment', state: id })
   }
 
   return (
@@ -57,20 +97,35 @@ export default function LandingPage() {
             <div className="form-group">
               <label htmlFor="exampleInputEmail1">Title</label>
               <input type="text" className="form-control" placeholder="Enter title"
-                onChange={(e) => handleChange(e)} name="title" />
+                onChange={(e) => handleChange(e)} name="title" value={title} />
             </div>
             <div className="form-group">
-              <label htmlFor="exampleInputPassword1">Password</label>
+              <label htmlFor="exampleInputPassword1">Content</label>
               <input type="text" className="form-control" placeholder="Enter content"
-                onChange={(e) => handleChange(e)} name="content" />
+                onChange={(e) => handleChange(e)} name="content" value={content} />
             </div>
             <button type="button" className="btn btn-primary" onClick={post}>Submit</button>
-            <button type="button" className="btn btn-primary" onClick={check}>Check</button>
           </form>
         </div>
       </div>
-      <div className="row">
-        <p>{JSON.stringify(userContent)}</p>
+      <div className="row mt-2">
+        <div className="col-md-8 offset-md-2">
+          {
+            userContent.map((val, id) =>
+              <div key={id} className="card mb-2 p-3">
+                <h3>Title   :</h3>
+                <p>{val.Content.title}</p>
+                <h3>Content :</h3>
+                <p>{val.Content.content}</p>
+                <div className="row">
+                  <button type="button" className="btn btn-warning col-md-2 ml-2" onClick={() => edit(val.Content.id)}>Edit</button>
+                  <button type="button" className="btn btn-danger col-md-2 ml-2" onClick={() => deleter(val.Content.id)}>Delete</button>
+                  <button type="button" className="btn btn-primary col-md-2 ml-2" onClick={() => comment(val.Content.id)}>Comment</button>
+                </div>
+              </div>
+            )
+          }
+        </div>
       </div>
     </div>
   )
